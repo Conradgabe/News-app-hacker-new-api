@@ -1,19 +1,28 @@
 from django.db import models
 
 class News(models.Model):
+
+    TYPE_CHOICES = (
+        ('story', 'story'),
+        ('comment', 'comment'),
+        ('ask', 'ask'),
+        ('job', 'job'),
+        ('poll', 'poll'),
+        ('pollopt', 'pollopt'),
+    )
+
     author = models.CharField(max_length=35)
     item_id = models.CharField(max_length=25)
     type_of = models.CharField(max_length=7, choices=TYPE_CHOICES)
-    time = models.CharField(max_length=40)
-    text = models.TextField(blank=True)
-    parent = models.IntegerField(blank=True)
-    poll = models.IntegerField(blank=True)
-    kids = models.TextField(blank=True)
-    url = models.URLField(max_length=200, blank=True)
-    score = models.IntegerField(blank=True)
-    title = models.CharField(max_length=250, blank=True)
-    parts = models.TextField(blank=True)
-    descendants = models.IntegerField(blank=True)
+    time = models.CharField(max_length=40, null=True)
+    text = models.TextField(blank=True, null=True)
+    parent = models.IntegerField(blank=True, null=True)
+    poll = models.IntegerField(blank=True, null=True)
+    kids = models.TextField(blank=True, null=True)
+    url = models.URLField(max_length=200, blank=True, null=True)
+    score = models.IntegerField(blank=True, null=True)
+    title = models.CharField(max_length=250, blank=True, null=True)
+    parts = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.item_id
@@ -40,7 +49,7 @@ class Story(models.Model):
     time = models.CharField(max_length=40)
     title = models.CharField(max_length=250)
     type_of = models.CharField(max_length=7, choices=TYPE_CHOICES)
-    url = models.URLField(max_length=200)
+    url = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return f"{self.author} - {self.title}"
@@ -65,7 +74,7 @@ class Comment(models.Model):
     type_of = models.CharField(max_length=7, choices=TYPE_CHOICES)
 
     def __str__(self):
-        return f"{self.author} - {self.title}"
+        return f"{self.author} - {self.type_of}"
 
 class Ask(models.Model):
     
