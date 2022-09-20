@@ -4,6 +4,9 @@ import time
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import filters, generics
+from django_filters.rest_framework import DjangoFilterBackend
+from django.http import HttpResponse
+from django.contrib import messages
 
 from .models import News, Story, Comment, Ask, Job, Poll, Pollopt
 from .serializers import ItemSerializer, CommentSerializer, AskSerializer, JobSerializer, PollSerializer, PolloptSerializer
@@ -95,46 +98,47 @@ class ItemList(APIView):
     def get(self, request, format=None):
 
         queryset = Story.objects.all()
+        queryset_2 = Comment.objects.all()
         serializer = ItemSerializer(queryset, many=True)
-        return Response(serializer.data)
+        serializer_comment = ItemSerializer(queryset_2, many=True)
+        return Response(data=[
+            serializer_comment.data, serializer.data
+        ])
+        
 
     # def get(self, request, format=None):
 
-        queryset = Comment.objects.all()
-        serializer_comment = CommentSerializer(queryset, many=True)
-        return Response(serializer_comment.data)
+        # queryset = Comment.objects.all()
+        # serializer_comment = CommentSerializer(queryset, many=True)
+        # return Response(serializer_comment.data)
 
-class ItemFilter(APIView):
-    
-    def get(self, request, *args, **kwargs):
-        queryset = Story.objects.all()
-
-        item_typeof = self.request.query_params.get('item_typeof')
-        if item_typeof:
-            queryset = queryset.filter(type_of=item_typeof)
-
-        serializer = ItemSerializer(queryset, many=True)
-
-        return Response(serializer.data)
-
-class ItemSearch(generics.ListAPIView):
+class ItemFilter(generics.ListAPIView):
     queryset = Story.objects.all()
     serializer_class = ItemSerializer
     pagination_class = CustomPageNumberPagination
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['^item_id','id', 'author', 'parts','url', 'text', 'poll', 'kids', 'time', 'title', 'type_of']
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['type_of', 'author']
+    
+
+class ItemSearch(generics.ListAPIView):
+    # queryset = Story.objects.all()
+    # serializer_class = ItemSerializer
+    # pagination_class = CustomPageNumberPagination
+    # filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    # search_fields = ('author')
+    pass
 
 class ItemUpdate(APIView):
 
     def post(self, request, pk, *args, **kwargs):
-        queryset = News.objects.get(id=pk)
+        queryset = Story.objects.get(id=pk)
         serializer = ItemSerializer(instance=queryset, many=True)
         return Response(serializer.data)
 
 class ItemDelete(APIView):
 
     def get(self, request, pk):
-        queryset = News.objects.get(id=pk)
+        queryset = Story.objects.get(id=pk)
         queryset.delete()
         return Response('Item successfully deleted')
     

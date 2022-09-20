@@ -11,7 +11,7 @@ class News(models.Model):
         ('pollopt', 'pollopt'),
     )
 
-    author = models.CharField(max_length=35)
+    author = models.CharField(max_length=35, null=True)
     item_id = models.CharField(max_length=25)
     type_of = models.CharField(max_length=7, choices=TYPE_CHOICES)
     time = models.CharField(max_length=40, null=True)
