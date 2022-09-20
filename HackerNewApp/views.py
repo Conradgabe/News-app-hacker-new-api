@@ -1,6 +1,5 @@
 from django.shortcuts import render
 import requests
-import time
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import filters, generics
@@ -11,6 +10,9 @@ from django.contrib import messages
 from .models import News, Story, Comment, Ask, Job, Poll, Pollopt
 from .serializers import ItemSerializer, CommentSerializer, AskSerializer, JobSerializer, PollSerializer, PolloptSerializer
 from .pagination import CustomPageNumberPagination
+
+import time
+from selenium import webdriver
 
 def make_request(request):
 
@@ -91,7 +93,14 @@ def make_request(request):
             # time.sleep(300)
 
         return render(request, 'index.html', {'res': response})
-        time.sleep(300)
+
+        waiting_duration_before_refresh = 300
+        driver = webdriver.Chrome()
+        driver.get(url)
+        
+        assert "127.0.0.1:8000" in driver.title
+        time.sleep(waiting_duration_before_refresh)
+        driver.refresh()
 
 class ItemList(APIView):
 
@@ -117,7 +126,7 @@ class ItemFilter(generics.ListAPIView):
     serializer_class = ItemSerializer
     pagination_class = CustomPageNumberPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['type_of', 'author']
+    search_fields = ['^type_of', 'author']
     
 
 class ItemSearch(generics.ListAPIView):
