@@ -12,7 +12,7 @@ from .serializers import ItemSerializer, CommentSerializer, AskSerializer, JobSe
 from .pagination import CustomPageNumberPagination
 
 import time
-from selenium import webdriver
+import webbrowser
 
 def make_request(request):
 
@@ -93,14 +93,9 @@ def make_request(request):
             # time.sleep(300)
 
         return render(request, 'index.html', {'res': response})
-
-        waiting_duration_before_refresh = 300
-        driver = webdriver.Chrome()
-        driver.get(url)
-        
-        assert "127.0.0.1:8000" in driver.title
-        time.sleep(waiting_duration_before_refresh)
-        driver.refresh()
+        print("refreshing...")
+        webbrowser.open(url, new=0)
+        time.sleep(300)
 
 class ItemList(APIView):
 
