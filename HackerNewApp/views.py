@@ -115,7 +115,7 @@ class ItemFilter(generics.ListAPIView):
     serializer_class = ItemSerializer
     pagination_class = CustomPageNumberPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['^type_of', 'author']
+    search_fields = ['type_of']
     
 
 class ItemSearch(generics.ListAPIView):
