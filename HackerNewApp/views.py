@@ -92,10 +92,10 @@ def make_request(request):
                 )
             # time.sleep(300)
 
-        return render(request, 'index.html', {'res': response})
-        print("refreshing...")
-        webbrowser.open(url, new=0)
-        time.sleep(300)
+        # return render(request, 'index.html', {'res': response})
+        # print("refreshing...")
+        # webbrowser.open(url, new=0)
+        # time.sleep(300)
 
 class ItemList(APIView):
 
@@ -114,16 +114,11 @@ class ItemFilter(generics.ListAPIView):
     queryset = Story.objects.all()
     serializer_class = ItemSerializer
     pagination_class = CustomPageNumberPagination
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['type_of']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['type_of']
     
 
 class ItemSearch(generics.ListAPIView):
-    # queryset = Story.objects.all()
-    # serializer_class = ItemSerializer
-    # pagination_class = CustomPageNumberPagination
-    # filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    # search_fields = ('author')
     queryset = Story.objects.all()
     serializer_class = ItemSerializer
 
