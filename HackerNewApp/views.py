@@ -110,12 +110,6 @@ class ItemList(APIView):
         ])
         
 
-    # def get(self, request, format=None):
-
-        # queryset = Comment.objects.all()
-        # serializer_comment = CommentSerializer(queryset, many=True)
-        # return Response(serializer_comment.data)
-
 class ItemFilter(generics.ListAPIView):
     queryset = Story.objects.all()
     serializer_class = ItemSerializer
@@ -130,7 +124,17 @@ class ItemSearch(generics.ListAPIView):
     # pagination_class = CustomPageNumberPagination
     # filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     # search_fields = ('author')
-    pass
+    queryset = News.objects.all()
+    serializer_class = ItemSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        q = self.request.GET.get('q')
+        results = News.objects.none()
+        if q is not None:
+            results = qs.search(q)
+        return results
+
 
 class ItemUpdate(APIView):
 

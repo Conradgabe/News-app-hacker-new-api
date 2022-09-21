@@ -1,4 +1,24 @@
 from django.db import models
+from django.db.models import Q
+
+class NewsQuerySet(models.QuerySet):
+    def is_type_of(self):
+        return self.filter(public=True)
+
+    def search(self, query, user=None):
+        lookup = Q(item_id__icontains=query) | Q(text__icontains=query) | Q(author__icontains=query)
+        qs = self.is_type_of().filter(lookup)
+        return qs
+
+
+class NewsManager(models.Manager):
+
+    def get_queryset(self, *args, **kwargs):
+        return NewsQuerySet(self.model, using=self._db)
+
+    def search(self, query, user=None):
+        return self.get_queryset().search(query)
+
 
 class News(models.Model):
 
@@ -23,9 +43,14 @@ class News(models.Model):
     score = models.IntegerField(blank=True, null=True)
     title = models.CharField(max_length=250, blank=True, null=True)
     parts = models.TextField(blank=True, null=True)
+    public = models.BooleanField(default=True)
+
+    objects = NewsManager()
 
     def __str__(self):
         return self.item_id
+
+    
 
 # class Author(models.Model):
 #     username = models.CharField(max_length=25)
