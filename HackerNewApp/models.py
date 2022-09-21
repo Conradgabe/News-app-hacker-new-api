@@ -6,13 +6,12 @@ class NewsQuerySet(models.QuerySet):
         return self.filter(public=True)
 
     def search(self, query, user=None):
-        lookup = Q(item_id__icontains=query) | Q(text__icontains=query) | Q(author__icontains=query)
+        lookup = Q(item_id__icontains=query) | Q(author__icontains=query)
         qs = self.is_type_of().filter(lookup)
         return qs
 
 
 class NewsManager(models.Manager):
-
     def get_queryset(self, *args, **kwargs):
         return NewsQuerySet(self.model, using=self._db)
 
@@ -45,7 +44,7 @@ class News(models.Model):
     parts = models.TextField(blank=True, null=True)
     public = models.BooleanField(default=True)
 
-    objects = NewsManager()
+    # objects = NewsManager()
 
     def __str__(self):
         return self.item_id
@@ -75,6 +74,9 @@ class Story(models.Model):
     title = models.CharField(max_length=250)
     type_of = models.CharField(max_length=7, choices=TYPE_CHOICES)
     url = models.CharField(max_length=200, blank=True)
+    public = models.BooleanField(default=True)
+
+    objects = NewsManager()
 
     def __str__(self):
         return f"{self.author} - {self.title}"

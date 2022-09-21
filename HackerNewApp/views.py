@@ -124,13 +124,13 @@ class ItemSearch(generics.ListAPIView):
     # pagination_class = CustomPageNumberPagination
     # filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     # search_fields = ('author')
-    queryset = News.objects.all()
+    queryset = Story.objects.all()
     serializer_class = ItemSerializer
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
         q = self.request.GET.get('q')
-        results = News.objects.none()
+        results = Story.objects.none()
         if q is not None:
             results = qs.search(q)
         return results
